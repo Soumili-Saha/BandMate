@@ -7,5 +7,5 @@
 - 🎤 Match with fellow musicians by swiping through artist profiles
 - 🎸 Form your own band or join one
 - 📅 Get suggestions for local gigs and performance opportunities
-=======
+
 

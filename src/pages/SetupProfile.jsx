@@ -1,13 +1,10 @@
-
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom'; // Add this import
-import {
-  Music, Mic, Upload, User, Target, TrendingUp, Users, 
-  ArrowRight, ArrowLeft, Check, Guitar, Piano, Drum, Sparkles
+import React, { useState } from 'react';
+import { 
+  User, MapPin, Music, Mic, Guitar, Target, TrendingUp, Users, Upload, 
+  ArrowLeft, ArrowRight, Check, Sparkles
 } from 'lucide-react';
 
 const UserSetup = () => {
-  const navigate = useNavigate(); // Add this hook
   const [formData, setFormData] = useState({
     displayName: '', 
     userType: '', 
@@ -15,16 +12,38 @@ const UserSetup = () => {
     genres: [], 
     level: '', 
     lookingFor: [], 
+    location: '',
     demo: null
   });
   const [currentStep, setCurrentStep] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
 
+  // Most popular options for Indian musicians covering 80% of use cases
   const data = {
-    instruments: ['Guitar', 'Bass', 'Drums', 'Piano/Keyboard', 'Violin', 'Saxophone', 'Trumpet', 'Flute', 'Cello', 'Harmonica', 'Ukulele', 'Banjo'],
-    genres: ['Rock', 'Pop', 'Jazz', 'Blues', 'Country', 'R&B/Soul', 'Hip-Hop', 'Electronic', 'Folk', 'Classical', 'Indie', 'Metal'],
-    bandMembers: ['Lead Vocalist', 'Backing Vocalist', 'Lead Guitarist', 'Rhythm Guitarist', 'Bass Player', 'Drummer', 'Keyboardist', 'Producer', 'Songwriter'],
-    levels: ['Beginner', 'Intermediate', 'Advanced', 'Professional']
+    instruments: [
+      'Guitar', 'Keyboard/Piano', 'Drums', 'Bass', 'Harmonium', 'Flute', 'Violin',
+      'Acoustic Guitar', 'Electric Guitar', 'Saxophone', 'Synthesizer', 'Mouth Organ',
+      'Tabla', 'Tanpura', 'Octopad', 'Clapbox', 'Sitar', 'Santoor', 'Sarod', 'Veena', 
+      'Mridangam', 'Dholak'
+    ],
+    genres: [
+      'Bollywood', 'Classical Indian', 'Folk', 'Pop', 'Rock', 'Hip-Hop', 'Electronic', 'Jazz',
+      'Carnatic', 'Hindustani', 'Bhangra', 'Qawwali', 'Ghazal', 'Devotional', 'Indie', 'Metal',
+      'Sufi', 'Regional Folk'
+    ],
+    lookingFor: [
+      'Lead Vocalist', 'Backing Vocalist', 'Lead Guitarist', 'Rhythm Guitarist', 'Bassist', 
+      'Drummer', 'Tabla Player', 'Mridangam Player', 'Flutist', 'Sitar Player', 'Keyboardist',
+      'Music Producer', 'Songwriter', 'Band Manager', 'Harmonium Player', 'Violinist',
+      'Dholak Player', 'Sarangi Player', 'DJ', 'Sound Engineer', 'Percussionist'
+    ],
+    levels: ['Beginner', 'Intermediate', 'Advanced', 'Professional'],
+    locations: [
+      'Mumbai, Maharashtra', 'Delhi, Delhi', 'Bangalore, Karnataka', 'Chennai, Tamil Nadu', 
+      'Kolkata, West Bengal', 'Hyderabad, Telangana', 'Pune, Maharashtra', 'Ahmedabad, Gujarat',
+      'Jaipur, Rajasthan', 'Lucknow, Uttar Pradesh', 'Kochi, Kerala', 'Goa, Goa',
+      'Chandigarh, Punjab', 'Indore, Madhya Pradesh', 'Bhopal, Madhya Pradesh', 'Coimbatore, Tamil Nadu'
+    ]
   };
 
   const handleCheckboxChange = (field, value) => {
@@ -63,19 +82,65 @@ const UserSetup = () => {
     </div>
   );
 
-  const CheckboxGrid = ({ options, field }) => (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-      {options.map(option => (
-        <label key={option} className="flex items-center p-4 rounded-xl hover:bg-orange-50 cursor-pointer transition-all duration-200 border border-transparent hover:border-orange-200 group">
-          <input 
-            type="checkbox" 
-            checked={formData[field].includes(option)} 
-            onChange={() => handleCheckboxChange(field, option)} 
-            className="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-400" 
+  const CheckboxGrid = ({ options, field }) => {
+    const [searchTerm, setSearchTerm] = useState('');
+    
+    const filteredOptions = options.filter(option => 
+      option.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    
+    return (
+      <div>
+        <div className="mb-6">
+          <input
+            type="text"
+            placeholder={`Search ${field}...`}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-orange-400 focus:border-orange-400 transition-all duration-300"
           />
-          <span className="ml-3 text-sm font-medium text-gray-700 group-hover:text-orange-600">{option}</span>
-        </label>
-      ))}
+        </div>
+        
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 max-h-80 overflow-y-auto">
+          {filteredOptions.map(option => (
+            <label key={option} className="flex items-center p-3 rounded-xl hover:bg-orange-50 cursor-pointer transition-all duration-200 border border-transparent hover:border-orange-200 group">
+              <input 
+                type="checkbox" 
+                checked={formData[field].includes(option)} 
+                onChange={() => handleCheckboxChange(field, option)} 
+                className="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-400 flex-shrink-0" 
+              />
+              <span className="ml-3 text-sm font-medium text-gray-700 group-hover:text-orange-600 leading-tight">{option}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
+  const LocationSelect = () => (
+    <div className="space-y-4">
+      <select 
+        value={formData.location} 
+        onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
+        className="w-full px-6 py-4 rounded-2xl border-2 border-gray-200 focus:ring-2 focus:ring-orange-400 focus:border-orange-400 text-lg transition-all duration-300 bg-white"
+      >
+        <option value="">Select your city...</option>
+        {data.locations.map(location => (
+          <option key={location} value={location}>{location}</option>
+        ))}
+      </select>
+      
+      <div className="text-center">
+        <p className="text-gray-500 text-sm mb-2">Don't see your city?</p>
+        <input 
+          type="text" 
+          placeholder="Enter your city manually"
+          value={formData.location.includes(',') ? '' : formData.location}
+          onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
+          className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-orange-400 focus:border-orange-400 transition-all duration-300 bg-white"
+        />
+      </div>
     </div>
   );
 
@@ -98,6 +163,14 @@ const UserSetup = () => {
       isValid: () => formData.displayName.trim().length > 0
     },
     {
+      id: 'location',
+      icon: MapPin, 
+      title: "Where are you located?", 
+      required: true,
+      content: <LocationSelect />,
+      isValid: () => formData.location.trim().length > 0
+    },
+    {
       id: 'type',
       icon: Music, 
       title: "What describes you best?", 
@@ -112,7 +185,7 @@ const UserSetup = () => {
       required: true,
       content: <CheckboxGrid 
         options={formData.userType === 'Vocalist' ? data.genres : data.instruments} 
-        field={formData.userType === 'Vocalist' ? 'genres' : 'instruments'} 
+        field={formData.userType === 'Vocalist' ? 'genres' : 'instruments'}
       />,
       isValid: () => formData.userType === 'Vocalist' ? formData.genres.length > 0 : formData.instruments.length > 0,
       show: () => formData.userType !== ''
@@ -128,9 +201,9 @@ const UserSetup = () => {
     {
       id: 'looking',
       icon: Users, 
-      title: "Who are you looking to jam with?", 
+      title: "Who are you looking to connect with?", 
       required: true,
-      content: <CheckboxGrid options={data.bandMembers} field="lookingFor" />,
+      content: <CheckboxGrid options={data.lookingFor} field="lookingFor" />,
       isValid: () => formData.lookingFor.length > 0
     },
     {
@@ -180,11 +253,6 @@ const UserSetup = () => {
     if (isLastStep) {
       console.log('Form submitted:', formData);
       alert('Profile submitted successfully! 🎵 Welcome to BandMate!');
-      
-      // Add a small delay for better UX, then redirect
-      setTimeout(() => {
-        navigate('/home'); // Redirect to home page
-      }, 1000);
     } else {
       setTimeout(() => {
         setCurrentStep(prev => prev + 1);
@@ -205,90 +273,25 @@ const UserSetup = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 relative overflow-hidden">
-    {/* Floating Musical Elements */}
+      {/* Floating Musical Elements */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-20 left-10 text-blue-300 opacity-60">
-          <Sparkles className="w-6 h-6 animate-pulse" />
-        </div>
-        <div className="absolute top-40 right-20 text-orange-300 opacity-70">
-          <Music className="w-4 h-4 animate-bounce" />
-        </div>
-        <div className="absolute bottom-32 left-1/4 text-red-300 opacity-60">
-          <Sparkles className="w-8 h-8 animate-ping" />
-        </div>
-        <div className="absolute top-1/3 right-1/4 text-purple-300 opacity-65">
-          <Music className="w-3 h-3 animate-pulse" />
-        </div>
-        <div className="absolute bottom-20 right-10 text-blue-400 opacity-70">
-          <Sparkles className="w-5 h-5 animate-bounce" />
-        </div>
-        <div className="absolute top-60 left-1/3 text-orange-400 opacity-60">
-          <Music className="w-2 h-2 animate-ping" />
-        </div>
-        <div className="absolute top-16 left-1/2 text-indigo-300 opacity-60">
-          <Music className="w-5 h-5 animate-pulse" />
-        </div>
-        <div className="absolute bottom-40 right-1/3 text-pink-300 opacity-65">
-          <Sparkles className="w-4 h-4 animate-bounce" />
-        </div>
-        <div className="absolute top-1/2 left-16 text-cyan-300 opacity-60">
-          <Music className="w-3 h-3 animate-ping" />
-        </div>
-        <div className="absolute bottom-60 left-2/3 text-violet-300 opacity-65">
-          <Sparkles className="w-6 h-6 animate-pulse" />
-        </div>
-        <div className="absolute top-80 right-16 text-emerald-300 opacity-60">
-          <Music className="w-4 h-4 animate-bounce" />
-        </div>
-        <div className="absolute bottom-16 left-1/2 text-rose-300 opacity-65">
-          <Sparkles className="w-3 h-3 animate-ping" />
-        </div>
-        <div className="absolute top-1/4 left-20 text-amber-300 opacity-60">
-          <Music className="w-2 h-2 animate-pulse" />
-        </div>
-        <div className="absolute bottom-1/3 right-24 text-teal-300 opacity-65">
-          <Sparkles className="w-5 h-5 animate-bounce" />
-        </div>
-        <div className="absolute top-32 right-1/2 text-lime-300 opacity-60">
-          <Music className="w-4 h-4 animate-pulse" />
-        </div>
-        <div className="absolute bottom-48 left-12 text-sky-300 opacity-65">
-          <Sparkles className="w-5 h-5 animate-bounce" />
-        </div>
-        <div className="absolute top-2/3 right-12 text-fuchsia-300 opacity-60">
-          <Music className="w-3 h-3 animate-ping" />
-        </div>
-        <div className="absolute bottom-24 right-1/2 text-yellow-300 opacity-65">
-          <Sparkles className="w-4 h-4 animate-pulse" />
-        </div>
-        <div className="absolute top-48 left-1/4 text-green-300 opacity-60">
-          <Music className="w-2 h-2 animate-bounce" />
-        </div>
-        <div className="absolute bottom-8 left-20 text-blue-300 opacity-65">
-          <Sparkles className="w-6 h-6 animate-ping" />
-        </div>
-        <div className="absolute top-12 right-32 text-red-300 opacity-60">
-          <Music className="w-5 h-5 animate-pulse" />
-        </div>
-        <div className="absolute bottom-1/4 right-8 text-purple-300 opacity-65">
-          <Sparkles className="w-3 h-3 animate-bounce" />
-        </div>
-        <div className="absolute top-3/4 left-8 text-orange-300 opacity-60">
-          <Music className="w-4 h-4 animate-ping" />
-        </div>
-        <div className="absolute bottom-12 left-1/4 text-indigo-300 opacity-65">
-          <Sparkles className="w-5 h-5 animate-pulse" />
-        </div>
-        <div className="absolute top-24 left-2/3 text-pink-300 opacity-60">
-          <Music className="w-3 h-3 animate-bounce" />
-        </div>
-        <div className="absolute bottom-36 right-2/3 text-cyan-300 opacity-65">
-          <Sparkles className="w-4 h-4 animate-ping" />
-        </div>
+        {[...Array(20)].map((_, i) => (
+          <div
+            key={i}
+            className={`absolute text-opacity-60 animate-${['pulse', 'bounce', 'ping'][i % 3]}`}
+            style={{
+              top: `${Math.random() * 100}%`,
+              left: `${Math.random() * 100}%`,
+              color: ['#60a5fa', '#f97316', '#ef4444', '#8b5cf6', '#06b6d4'][i % 5]
+            }}
+          >
+            {i % 2 === 0 ? <Sparkles className="w-4 h-4" /> : <Music className="w-3 h-3" />}
+          </div>
+        ))}
       </div>
 
       <div className="relative z-10 p-6 max-w-4xl mx-auto">
-        {/* Header - Matching BandMate Style */}
+        {/* Header */}
         <div className="text-center mb-10 pt-12">
           <div className="flex items-center justify-center gap-4 mb-6">
             <div className="w-14 h-14 bg-gradient-to-r from-orange-400 to-red-500 rounded-2xl flex items-center justify-center shadow-lg">
@@ -337,7 +340,7 @@ const UserSetup = () => {
           </div>
         )}
 
-        {/* Navigation - BandMate Style */}
+        {/* Navigation */}
         <div className="flex justify-between items-center">
           <button
             onClick={handlePrev}

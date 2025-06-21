@@ -23,7 +23,7 @@ export default function Landing() {
   };
 
   const handleLoginClick = () => {
-    navigate("/SetupProfile");
+    navigate("/Login");
   };
 
   return (

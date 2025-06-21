@@ -1,10 +1,13 @@
+
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom'; // Add this import
 import {
   Music, Mic, Upload, User, Target, TrendingUp, Users, 
   ArrowRight, ArrowLeft, Check, Guitar, Piano, Drum, Sparkles
 } from 'lucide-react';
 
 const UserSetup = () => {
+  const navigate = useNavigate(); // Add this hook
   const [formData, setFormData] = useState({
     displayName: '', 
     userType: '', 
@@ -177,6 +180,11 @@ const UserSetup = () => {
     if (isLastStep) {
       console.log('Form submitted:', formData);
       alert('Profile submitted successfully! 🎵 Welcome to BandMate!');
+      
+      // Add a small delay for better UX, then redirect
+      setTimeout(() => {
+        navigate('/home'); // Redirect to home page
+      }, 1000);
     } else {
       setTimeout(() => {
         setCurrentStep(prev => prev + 1);
